@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, Switch, View, TouchableOpacity } from 'react-native';
+import { Text, Switch, View, TouchableOpacity, Image } from 'react-native';
 
 export default class Card extends React.Component {
     constructor(props) {
@@ -39,6 +39,10 @@ export default class Card extends React.Component {
                         <Text style={completeStyle}>
                             { this.props.item.text }
                         </Text>
+                        <Image
+                            style={{width: 50, height: 50}}
+                            source={{uri: this.props.item.url}}
+                        />
                     </TouchableOpacity>
                 </View>
                 <TouchableOpacity

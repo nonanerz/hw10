@@ -9,7 +9,8 @@ export default class App extends React.Component {
         this.state = {
             id: 0,
             todo: [],
-            text: ''
+            text: '',
+            url: ''
         }
         this.handleClick = this.handleClick.bind(this);
         this.pickDate = this.pickDate.bind(this);
@@ -45,20 +46,24 @@ export default class App extends React.Component {
         })
     }
 
-    handleClick() {
+    handleClick(text, url) {
         let id = this.state.id
         id++
         this.state.todo.unshift({
             id: id,
-            text: this.state.text,
-            complete: false
+            text,
+            complete: false,
+            url
         })
+
 
         this.setState({
             id: id,
             todo: this.state.todo,
             text: ''
         })
+        console.log(this.state.todo)
+
     }
 
     async pickDate() {
@@ -75,7 +80,7 @@ export default class App extends React.Component {
         }
     }
 
-    _keyExtractor = (item, index) => item.id;
+    _keyExtractor = (item) => item.id;
 
     render() {
         return (
@@ -83,6 +88,7 @@ export default class App extends React.Component {
 
               <Header
                   text={this.state.text}
+                  url={this.state.url}
                   onAddItem={this.handleClick}
                   onChange={(text) => this.setState({text})}
               />

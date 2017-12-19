@@ -1,35 +1,40 @@
 import React from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, Image, PixelRatio } from 'react-native';
 import ImagePicker from 'react-native-image-picker'
 import RNFS from 'react-native-fs'
 
 export default class Header extends React.Component {
-    constructor (props) {
-        super(props)
+    constructor(props) {
+        super(props);
         this.state = {
-            avatarSource: {}
-        }
-        this.selectImage = this.selectImage.bind(this)
+            text:'',
+            avatarSource: null,
+        };
+        this.handleData = this.handleData.bind(this);
     }
-    selectImage () {
-        let options = {
-            title: 'Select Avatar',
+
+
+    selectPhotoTapped() {
+        const options = {
+            quality: 1.0,
+            maxWidth: 500,
+            maxHeight: 500,
             storageOptions: {
-                skipBackup: true,
-                path: 'images'
+                skipBackup: true
             }
         };
+
         ImagePicker.showImagePicker(options, (response) => {
-            console.log('Response = ', response)
+            console.log('Response = ', response);
 
             if (response.didCancel) {
-                console.log('User cancelled image picker')
+                console.log('User cancelled photo picker');
             }
             else if (response.error) {
-                console.log('ImagePicker Error: ', response.error)
+                console.log('ImagePicker Error: ', response.error);
             }
             else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton)
+                console.log('User tapped custom button: ', response.customButton);
             }
             else {
                 let filePath = RNFS.DocumentDirectoryPath + '/test-image.jpeg'
@@ -43,11 +48,20 @@ export default class Header extends React.Component {
                     })
                 this.setState({
                     avatarSource: { uri: response.uri }
-                    // avatarSource: { uri: 'file://' + filePath }
                 }, () => { console.log('avatar', this.state.avatarSource) })
+                this.props.url = this.state.avatarSource.uri
             }
         })
     }
+
+    handleData() {
+        this.props.onAddItem(this.props.text, this.state.avatarSource.uri)
+        this.setState({
+            avatarSource: null
+        })
+    }
+
+
     render() {
         return (
             <View style={{paddingHorizontal: 15, flexDirection: "row", alignItems: "center"}}>
@@ -57,16 +71,19 @@ export default class Header extends React.Component {
                     style={{flex: 1, height: 50, marginLeft: 16}}
                     value={this.props.text}
                     onChangeText={this.props.onChange}
-                    onSubmitEditing={this.props.onAddItem}
+                    onSubmitEditing={this.handleData}
                 />
-                <TouchableOpacity
-                    onPress={this.selectImage}>
-                    <Text style={styles.photoButtonText}>
-                        Upload image
-                    </Text>
+
+                <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)}>
+                    <View style={[styles.avatar, styles.avatarContainer, {marginBottom: 20}]}>
+                        { this.state.avatarSource === null ? <Text>Photo</Text> :
+                            <Image style={styles.avatar} source={this.state.avatarSource} />
+                        }
+                    </View>
                 </TouchableOpacity>
+
                 <TouchableOpacity
-                    onPress={this.props.onAddItem}
+                    onPress={this.handleData}
                 >
                     <Text style={{fontSize: 25, color: 'green'}}>{String.fromCharCode(10003)}</Text>
                 </TouchableOpacity>
@@ -75,30 +92,23 @@ export default class Header extends React.Component {
     }
 }
 
-let styles = StyleSheet.create({
-    container: {
-        justifyContent: 'center'
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        textAlign: 'center'
-    },
-    photoButton: {
-        flex: 0,
-        padding: 20,
-        marginBottom: 10,
-        backgroundColor: 'grey',
-        justifyContent: 'center'
-    },
-    photoButtonText: {
-        color: 'blue',
-        textAlign: 'center'
-    },
-    uploadAvatar: {
-        width: 400,
-        height: 400,
-        backgroundColor: 'grey'
-    }
-})
 
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F5FCFF'
+    },
+    avatarContainer: {
+        borderColor: '#9B9B9B',
+        borderWidth: 1 / PixelRatio.get(),
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    avatar: {
+        borderRadius: 75,
+        width: 50,
+        height: 50
+    }
+});
