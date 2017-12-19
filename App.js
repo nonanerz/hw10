@@ -16,6 +16,7 @@ export default class App extends React.Component {
         this.pickDate = this.pickDate.bind(this);
         this.handleToggleComplete = this.handleToggleComplete.bind(this);
         this.handleRemoveTodo = this.handleRemoveTodo.bind(this);
+        this.handleEditTodo = this.handleEditTodo.bind(this);
     }
 
     handleToggleComplete(id, complete) {
@@ -46,14 +47,29 @@ export default class App extends React.Component {
         })
     }
 
+    handleEditTodo(id, text) {
+        alert(id, text)
+        let todos = this.state.todo
+        todos.map((item) => {
+            if (item.id === id) {
+                item.text = text
+            }
+            return item
+        })
+        this.setState({
+            todo: todos
+        })
+    }
+
     handleClick(text, url) {
         let id = this.state.id
         id++
+        let image = url ? url : ''
         this.state.todo.unshift({
             id: id,
             text,
             complete: false,
-            url
+            url: image
         })
 
 
@@ -98,7 +114,7 @@ export default class App extends React.Component {
                     keyExtractor={this._keyExtractor}
                     data={this.state.todo}
                     extraData={this.state}
-                    renderItem={({item}) => <Card removeItem={this.handleRemoveTodo} onComplete={this.handleToggleComplete} item={item}/>}
+                    renderItem={({item}) => <Card editItem={this.handleEditTodo} removeItem={this.handleRemoveTodo} onComplete={this.handleToggleComplete} item={item}/>}
                 />
               </View>
             </View>

@@ -7,6 +7,7 @@ export default class Card extends React.Component {
 
         this.handleChangeValue = this.handleChangeValue.bind(this);
         this.removeTodo = this.removeTodo.bind(this);
+        this.editTodo = this.editTodo.bind(this);
     }
 
     handleChangeValue() {
@@ -18,7 +19,7 @@ export default class Card extends React.Component {
     }
 
     editTodo() {
-        alert(123)
+        this.props.editItem(this.props.item.id, 'asd')
     }
 
     render() {
@@ -33,22 +34,25 @@ export default class Card extends React.Component {
                 />
 
                 <View style={{ flex: 1, marginHorizontal: 10 }}>
-                    <TouchableOpacity
-                        onPress={this.editTodo}
-                    >
-                        <Text style={completeStyle}>
+                    <TouchableOpacity>
+                        <Text style={completeStyle}
+                              onPress={this.editTodo}
+                        >
                             { this.props.item.text }
                         </Text>
-                        <Image
-                            style={{width: 50, height: 50}}
-                            source={{uri: this.props.item.url}}
-                        />
                     </TouchableOpacity>
+
                 </View>
+                { this.props.item.url ?
+                    <Image
+                        style={{width: 50, height: 50}}
+                        source={{uri: this.props.item.url}}
+                    /> : null
+                }
                 <TouchableOpacity
                     onPress={this.removeTodo}
                 >
-                    <Text style={{fontSize: 25, color: 'red'}}>x</Text>
+                    <Text style={{fontSize: 25, color: 'red', padding: 5}}>X</Text>
 
                 </TouchableOpacity>
             </View>

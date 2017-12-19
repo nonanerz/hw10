@@ -55,7 +55,11 @@ export default class Header extends React.Component {
     }
 
     handleData() {
-        this.props.onAddItem(this.props.text, this.state.avatarSource.uri)
+        if (this.state.avatarSource && this.props.text) {
+            this.props.onAddItem(this.props.text, this.state.avatarSource.uri)
+        } else if (this.props.text) {
+            this.props.onAddItem(this.props.text, '')
+        }
         this.setState({
             avatarSource: null
         })
