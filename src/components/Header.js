@@ -59,38 +59,49 @@ export default class Header extends React.Component {
             this.props.onAddItem(this.props.text, this.state.avatarSource.uri)
         } else if (this.props.text) {
             this.props.onAddItem(this.props.text, '')
+        } else {
+            alert('Bad data')
         }
         this.setState({
             avatarSource: null
         })
     }
 
-
     render() {
         return (
-            <View style={{paddingHorizontal: 15, flexDirection: "row", alignItems: "center"}}>
-                <TextInput
-                    placeholder="What is your main focus for today?"
-                    returnKeyType="done"
-                    style={{flex: 1, height: 50, marginLeft: 16}}
-                    value={this.props.text}
-                    onChangeText={this.props.onChange}
-                    onSubmitEditing={this.handleData}
-                />
+            <View>
+                <View style={styles.viewInput}>
+                    <TextInput
+                        placeholder="What is your main focus for today?"
+                        returnKeyType="done"
+                        style={styles.textInput}
+                        value={this.props.text}
+                        onChangeText={this.props.onChange}
+                        onSubmitEditing={this.handleData}
+                    />
 
-                <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)}>
-                    <View style={[styles.avatar, styles.avatarContainer, {marginBottom: 20}]}>
-                        { this.state.avatarSource === null ? <Text>Photo</Text> :
-                            <Image style={styles.avatar} source={this.state.avatarSource} />
-                        }
-                    </View>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={this.handleData}
+                    >
+                        <Text style={styles.submit}>{String.fromCharCode(10003)}</Text>
+                    </TouchableOpacity>
+                </View>
 
-                <TouchableOpacity
-                    onPress={this.handleData}
-                >
-                    <Text style={{fontSize: 25, color: 'green'}}>{String.fromCharCode(10003)}</Text>
-                </TouchableOpacity>
+                <View  style={styles.viewInput}>
+                    <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)}>
+                        <View style={[styles.avatar, styles.avatarContainer, {marginBottom: 20}]}>
+                            { this.state.avatarSource === null ? <Text>Photo</Text> :
+                                <Image style={styles.avatar} source={this.state.avatarSource} />
+                            }
+                        </View>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={this.props.pickDate}>
+                        <View style={[styles.avatar, styles.avatarContainer, {marginBottom: 20}]}>
+                            <Text>Date</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
             </View>
         );
     }
@@ -114,5 +125,19 @@ const styles = StyleSheet.create({
         borderRadius: 75,
         width: 50,
         height: 50
+    },
+    viewInput: {
+        paddingHorizontal: 15,
+        flexDirection: "row",
+        alignItems: "center"
+    },
+    textInput: {
+        flex: 1,
+        height: 50,
+        marginLeft: 16
+    },
+    submit: {
+        fontSize: 25,
+        color: 'green'
     }
 });

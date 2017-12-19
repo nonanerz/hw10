@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, FlatList, DatePickerAndroid } from 'react-native';
+import {StyleSheet, View, FlatList, DatePickerAndroid} from 'react-native';
 import Card from "./src/components/Card";
 import Header from "./src/components/Header";
 
@@ -10,13 +10,15 @@ export default class App extends React.Component {
             id: 0,
             todo: [],
             text: '',
-            url: ''
+            url: '',
+            date: null
         }
         this.handleClick = this.handleClick.bind(this);
         this.pickDate = this.pickDate.bind(this);
         this.handleToggleComplete = this.handleToggleComplete.bind(this);
         this.handleRemoveTodo = this.handleRemoveTodo.bind(this);
         this.handleEditTodo = this.handleEditTodo.bind(this);
+        this.handleUpdate = this.handleUpdate.bind(this);
     }
 
     handleToggleComplete(id, complete) {
@@ -47,12 +49,27 @@ export default class App extends React.Component {
         })
     }
 
-    handleEditTodo(id, text) {
-        alert(id, text)
+    handleEditTodo(id) {
+        let todos = this.state.todo
+        todos.map((item) => {
+            if (item.id === id) {
+                item.editing = true
+            } else {
+                item.editing = false
+            }
+            return item
+        })
+        this.setState({
+            todo: todos
+        })
+    }
+
+    handleUpdate(id, text) {
         let todos = this.state.todo
         todos.map((item) => {
             if (item.id === id) {
                 item.text = text
+                item.editing = false
             }
             return item
         })
@@ -69,14 +86,17 @@ export default class App extends React.Component {
             id: id,
             text,
             complete: false,
-            url: image
+            url: image,
+            editing: false,
+            date: this.state.date
         })
 
 
         this.setState({
             id: id,
             todo: this.state.todo,
-            text: ''
+            text: '',
+            date: null
         })
         console.log(this.state.todo)
 
@@ -89,7 +109,7 @@ export default class App extends React.Component {
             });
 
             this.setState({
-                text: year + ' ' + month + ' ' + day
+                date: year + '/' + month + '/' + day
             })
         } catch ({code, message}) {
             console.warn('Cannot open date picker', message);
@@ -102,21 +122,27 @@ export default class App extends React.Component {
         return (
             <View style={styles.container}>
 
-              <Header
-                  text={this.state.text}
-                  url={this.state.url}
-                  onAddItem={this.handleClick}
-                  onChange={(text) => this.setState({text})}
-              />
-
-              <View style={styles.content}>
-                <FlatList
-                    keyExtractor={this._keyExtractor}
-                    data={this.state.todo}
-                    extraData={this.state}
-                    renderItem={({item}) => <Card editItem={this.handleEditTodo} removeItem={this.handleRemoveTodo} onComplete={this.handleToggleComplete} item={item}/>}
+                <Header
+                    text={this.state.text}
+                    url={this.state.url}
+                    onAddItem={this.handleClick}
+                    onChange={(text) => this.setState({text})}
+                    pickDate={this.pickDate}
                 />
-              </View>
+
+                <View style={styles.content}>
+                    <FlatList
+                        keyExtractor={this._keyExtractor}
+                        data={this.state.todo}
+                        extraData={this.state}
+                        renderItem={({item}) =>
+                            <Card onUpdate={this.handleUpdate} editItem={this.handleEditTodo}
+                                  removeItem={this.handleRemoveTodo}
+                                  onComplete={this.handleToggleComplete} item={item}
+                            />
+                        }
+                    />
+                </View>
             </View>
         );
     }
@@ -131,6 +157,6 @@ const styles = StyleSheet.create({
         paddingTop: 30
     },
     content: {
-      flex: 1
+        flex: 1
     }
 });
