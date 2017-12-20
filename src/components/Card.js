@@ -53,7 +53,6 @@ export default class Card extends React.Component {
                     onChangeText={(text) => this.setState({text})}
                     autoFocus
                     value={this.state.text}
-                    multiline
                     onSubmitEditing={this.editText}
 
                 />
@@ -65,6 +64,7 @@ export default class Card extends React.Component {
                 <Switch
                     value={this.props.item.complete}
                     onValueChange={this.handleChangeValue}
+                    disabled={this.props.item.editing}
                 />
 
                 <View style={styles.dateView}>
@@ -80,12 +80,15 @@ export default class Card extends React.Component {
                         source={{uri: this.props.item.url}}
                     /> : null
                 }
-                <TouchableOpacity
-                    onPress={this.removeTodo}
-                >
-                    <Text style={styles.remove}>X</Text>
 
-                </TouchableOpacity>
+                {this.props.item.editing ?
+                    <TouchableOpacity onPress={this.editText}>
+                        <Text style={styles.submit}>{String.fromCharCode(10003)}</Text>
+                    </TouchableOpacity> :
+                    <TouchableOpacity onPress={this.removeTodo}>
+                        <Text style={styles.remove}>X</Text>
+                    </TouchableOpacity>
+                }
             </View>
         );
     }
@@ -110,7 +113,10 @@ const styles = StyleSheet.create({
         fontSize: 25,
         color: 'red',
         padding: 5
+    },
+    submit: {
+        fontSize: 25,
+        color: 'green'
     }
-
 });
 

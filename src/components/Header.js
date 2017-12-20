@@ -98,7 +98,9 @@ export default class Header extends React.Component {
 
                     <TouchableOpacity onPress={this.props.pickDate}>
                         <View style={[styles.avatar, styles.avatarContainer, {marginBottom: 20}]}>
-                            <Text>Date</Text>
+                            { this.props.date === null ? <Text>Date</Text> :
+                                <Text style={{fontSize: 9}}>{this.props.date}</Text>
+                            }
                         </View>
                     </TouchableOpacity>
                 </View>

@@ -128,6 +128,7 @@ export default class App extends React.Component {
                     onAddItem={this.handleClick}
                     onChange={(text) => this.setState({text})}
                     pickDate={this.pickDate}
+                    date={this.state.date}
                 />
 
                 <View style={styles.content}>
