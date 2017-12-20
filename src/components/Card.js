@@ -32,14 +32,9 @@ export default class Card extends React.Component {
     }
 
     render() {
-        const completeStyle = !this.props.item.complete ? {fontSize: 24, color: '#4d4d4d'} : {
-            fontSize: 24,
-            color: '#4d4d4d',
-            textDecorationLine: 'line-through'
-        }
         const textComponent =
             <View>
-                <Text style={completeStyle}
+                <Text style={[styles.complete, {textDecorationLine: this.props.item.complete ? 'line-through' : 'none'}]}
                       onPress={this.editTodo}
                 >
                     {this.props.item.text}
@@ -49,7 +44,7 @@ export default class Card extends React.Component {
         const editComponent =
             <View>
                 <TextInput
-                    style={completeStyle}
+                    style={[styles.complete, {textDecorationLine: (this.props.item.complete ? 'line-through' : 'none')}]}
                     onChangeText={(text) => this.setState({text})}
                     autoFocus
                     value={this.state.text}
@@ -117,6 +112,10 @@ const styles = StyleSheet.create({
     submit: {
         fontSize: 25,
         color: 'green'
+    },
+    complete: {
+        fontSize: 24,
+        color: '#4d4d4d'
     }
 });
 
