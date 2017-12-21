@@ -16,8 +16,6 @@ export default class App extends React.Component {
             date: null
         }
 
-        console.log(this.state.todo)
-
         this.handleClick = this.handleClick.bind(this);
         this.pickDate = this.pickDate.bind(this);
         this.handleToggleComplete = this.handleToggleComplete.bind(this);
@@ -25,11 +23,13 @@ export default class App extends React.Component {
         this.handleEditTodo = this.handleEditTodo.bind(this);
         this.handleUpdate = this.handleUpdate.bind(this);
         this.storeData = this.storeData.bind(this);
-        this.getData = this.getData.bind(this);
     }
 
     componentWillMount() {
-        RNFS.readFile(RNFS.DocumentDirectoryPath + '/todo.json').then(data => this.setState({todo: data ? JSON.parse(data) : []}))
+        const filepath = RNFS.DocumentDirectoryPath + '/todo.json'
+        if (RNFS.exists(filepath)) {
+            RNFS.readFile(filepath).then(data => this.setState({todo: data ? JSON.parse(data) : []}))
+        }
     }
 
     handleToggleComplete(id, complete) {
@@ -42,23 +42,15 @@ export default class App extends React.Component {
                 complete
             }
         })
-
-        this.setState({
-            todo: newItems
-        })
         this.storeData(newItems)
     }
 
     storeData(data) {
         const filePath = RNFS.DocumentDirectoryPath + '/todo.json'
         RNFS.writeFile(filePath, JSON.stringify(data))
-        this.getData()
-    }
 
-    getData() {
-        const filePath = RNFS.DocumentDirectoryPath + '/todo.json'
-        RNFS.readFile(filePath).then(function (data) {
-            console.log(JSON.parse(data))
+        this.setState({
+            todo: data
         })
     }
 
@@ -68,9 +60,6 @@ export default class App extends React.Component {
             if (item.id === id) {
                 todos.splice(i, 1);
             }
-        })
-        this.setState({
-            todo: todos
         })
         this.storeData(todos)
     }
@@ -85,9 +74,6 @@ export default class App extends React.Component {
             }
             return item
         })
-        this.setState({
-            todo: todos
-        })
         this.storeData(todos)
     }
 
@@ -100,9 +86,7 @@ export default class App extends React.Component {
             }
             return item
         })
-        this.setState({
-            todo: todos
-        })
+
         this.storeData(todos)
     }
 
@@ -122,7 +106,6 @@ export default class App extends React.Component {
 
         this.setState({
             id: id,
-            todo: this.state.todo,
             text: '',
             date: null
         })
