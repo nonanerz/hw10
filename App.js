@@ -27,9 +27,7 @@ export default class App extends React.Component {
 
     componentWillMount() {
         const filepath = RNFS.DocumentDirectoryPath + '/todo.json'
-        if (RNFS.exists(filepath)) {
-            RNFS.readFile(filepath).then(data => this.setState({todo: data ? JSON.parse(data) : []}))
-        }
+        RNFS.readFile(filepath).then(data => this.setState({todo: data ? JSON.parse(data) : []}))
     }
 
     handleToggleComplete(id, complete) {
