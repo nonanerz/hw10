@@ -25,32 +25,15 @@ export default class Header extends React.Component {
         };
 
         ImagePicker.showImagePicker(options, (response) => {
-            console.log('Response = ', response);
 
-            if (response.didCancel) {
-                console.log('User cancelled photo picker');
-            }
-            else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
-            }
-            else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton);
-            }
-            else {
                 let filePath = RNFS.DocumentDirectoryPath + '/test-image.jpeg'
                 console.log('response', response)
                 RNFS.writeFile(filePath, response.data, 'base64')
-                    .then(() => {
-                        console.log('saved file', filePath)
-                    })
-                    .catch(err => {
-                        console.log('error save file', err)
-                    })
                 this.setState({
                     avatarSource: { uri: response.uri }
                 }, () => { console.log('avatar', this.state.avatarSource) })
                 this.props.url = this.state.avatarSource.uri
-            }
+
         })
     }
 

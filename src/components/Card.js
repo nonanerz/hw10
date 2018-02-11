@@ -16,19 +16,19 @@ export default class Card extends React.Component {
     }
 
     handleChangeValue() {
-        this.props.onComplete(this.props.item.id, !this.props.item.complete)
+        this.props.onComplete(this.props.item._id, !this.props.item.complete)
     }
 
     removeTodo() {
-        this.props.removeItem(this.props.item.id)
+        this.props.removeItem(this.props.item._id)
     }
 
     editTodo() {
-        this.props.editItem(this.props.item.id)
+        this.props.editItem(this.props.item._id)
     }
 
     editText() {
-        this.props.onUpdate(this.props.item.id, this.state.text)
+        this.props.onUpdate(this.props.item._id, this.state.text)
     }
 
     render() {

@@ -3,6 +3,7 @@ import {StyleSheet, View, FlatList, DatePickerAndroid} from 'react-native';
 import Card from "./src/components/Card";
 import Header from "./src/components/Header";
 import RNFS from 'react-native-fs'
+import axios from 'axios'
 
 export default class App extends React.Component {
     constructor(props) {
@@ -16,25 +17,22 @@ export default class App extends React.Component {
             date: null
         }
 
-        console.log(this.state.todo)
-
         this.handleClick = this.handleClick.bind(this);
         this.pickDate = this.pickDate.bind(this);
         this.handleToggleComplete = this.handleToggleComplete.bind(this);
         this.handleRemoveTodo = this.handleRemoveTodo.bind(this);
         this.handleEditTodo = this.handleEditTodo.bind(this);
         this.handleUpdate = this.handleUpdate.bind(this);
-        this.storeData = this.storeData.bind(this);
-        this.getData = this.getData.bind(this);
     }
 
     componentWillMount() {
-        RNFS.readFile(RNFS.DocumentDirectoryPath + '/todo.json').then(data => this.setState({todo: data ? JSON.parse(data) : []}))
+        axios.get('http://192.168.1.109:3005/api/v1/todos')
+            .then(response => this.setState({todo: response.data.todos}))
     }
 
     handleToggleComplete(id, complete) {
         const newItems = this.state.todo.map(item => {
-            if (item.id !== id) {
+            if (item._id !== id) {
                 return item
             }
             return {
@@ -46,39 +44,38 @@ export default class App extends React.Component {
         this.setState({
             todo: newItems
         })
-        this.storeData(newItems)
-    }
 
-    storeData(data) {
-        const filePath = RNFS.DocumentDirectoryPath + '/todo.json'
-        RNFS.writeFile(filePath, JSON.stringify(data))
-        this.getData()
-    }
+        console.log(complete, 'complete')
 
-    getData() {
-        const filePath = RNFS.DocumentDirectoryPath + '/todo.json'
-        RNFS.readFile(filePath).then(function (data) {
-            console.log(JSON.parse(data))
+        axios.put(`http://192.168.1.109:3005/api/v1/todos/${id}`, {
+            todo: {
+                complete,
+            }
         })
+            .then(response => console.log('edited'))
+
     }
 
     handleRemoveTodo(id) {
         let todos = this.state.todo
         todos.forEach((item, i) => {
-            if (item.id === id) {
+            if (item._id === id) {
                 todos.splice(i, 1);
             }
         })
+        axios.delete(`http://192.168.1.109:3005/api/v1/todos/${id}`)
+            .then(function (response) {
+                console.log('removed', response)
+            })
         this.setState({
             todo: todos
         })
-        this.storeData(todos)
     }
 
     handleEditTodo(id) {
         let todos = this.state.todo
         todos.map((item) => {
-            if (item.id === id) {
+            if (item._id === id) {
                 item.editing = true
             } else {
                 item.editing = false
@@ -88,13 +85,12 @@ export default class App extends React.Component {
         this.setState({
             todo: todos
         })
-        this.storeData(todos)
     }
 
     handleUpdate(id, text) {
         let todos = this.state.todo
         todos.map((item) => {
-            if (item.id === id) {
+            if (item._id === id) {
                 item.text = text
                 item.editing = false
             }
@@ -103,30 +99,27 @@ export default class App extends React.Component {
         this.setState({
             todo: todos
         })
-        this.storeData(todos)
+        axios.put(`http://192.168.1.109:3005/api/v1/todos/${id}`, {
+            todo: {
+                text,
+            }
+        })
+            .then(response => console.log('edited'))
     }
 
     handleClick(text, url) {
-        let id = this.state.id
-        id++
         let image = url ? url : ''
-        this.state.todo.unshift({
-            id: id,
-            text,
-            complete: false,
-            url: image,
-            editing: false,
-            date: this.state.date
-        })
 
-
-        this.setState({
-            id: id,
-            todo: this.state.todo,
-            text: '',
-            date: null
+        axios.post(`http://192.168.1.109:3005/api/v1/todos`, {
+            todo: {
+                text,
+                complete: false,
+                url: image,
+                editing: false,
+                date: this.state.date
+            }
         })
-        this.storeData(this.state.todo)
+            .then(response => this.setState({todos: this.state.todo.push(response.data.todo), text: ''}))
     }
 
     async pickDate() {
@@ -143,7 +136,7 @@ export default class App extends React.Component {
         }
     }
 
-    _keyExtractor = (item) => item.id;
+    _keyExtractor = (item) => item._id;
 
     render() {
         return (
